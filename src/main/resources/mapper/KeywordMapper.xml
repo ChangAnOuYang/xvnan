@@ -14,9 +14,7 @@
     </insert>
 
     <delete id="deleteKeyword" parameterType="String">
-
         delete from keyword where name = #{name}
-
     </delete>
 
 </mapper>

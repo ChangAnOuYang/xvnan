@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.xvnan.mapper.KeywordMapper">
+<mapper namespace="com.xvnan.mapper.EncryptDataMapper">
 
     <select id="getEncryptDatas" resultType="com.xvnan.model.EncryptData">
         select
@@ -8,5 +8,9 @@
         from encrypt_data
     </select>
 
+    <insert id="insertEncryptData" parameterType="String">
+        insert into encrypt_data (index_string,data_string) values
+        (#{index_string}, #{data_string})
+    </insert>
 
 </mapper>

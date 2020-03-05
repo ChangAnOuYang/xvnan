@@ -10,6 +10,7 @@ import com.xvnan.jpbc.api.Pairing;
 import com.xvnan.jpbc.api.PairingParameters;
 import com.xvnan.jpbc.plaf.pairing.PairingFactory;
 import com.xvnan.jpbc.plaf.pairing.a1.TypeA1CurveGenerator;
+import com.xvnan.util.JPBCUtil;
 import org.junit.Test;
 
 public class LoginTest {
@@ -40,9 +41,22 @@ public class LoginTest {
     };
 
     @Test
-    public void testMain(){
-        System.out.println(HttpClientUtils.doPost("http://localhost:8081/main/insertKeyword","\"ttt1\""));
+    public void testSearch(){
+        JSONObject jsonObject=new JSONObject();
+        jsonObject.put("indexArray","BVPs1pYOncKhR+ig4z2WaAgC14lE0fxda1p81PsxkKiY2g==");
+        jsonObject.put("indexString","Balhtl19mEb0EF4D8cyK2CkEb/SYxAqmhh0zUrej040OvQ==");
+        System.out.println(HttpClientUtils.doPost("http://localhost:8081/main/searchData",jsonObject.toJSONString()));
+    }
+
+    @Test
+    public void testUpload() {
+        //JPBCUtil.getPairing();
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("indexArray", "BVPs1pYOncKhR+ig4z2WaAgC14lE0fxda1p81PsxkKiY2g==");
+        jsonObject.put("indexString", "Balhtl19mEb0EF4D8cyK2CkEb/SYxAqmhh0zUrej040OvQ==");
+        System.out.println(HttpClientUtils.doPost("http://localhost:8081/main/uploadData", jsonObject.toJSONString()));
     }
 }
+
 
 */

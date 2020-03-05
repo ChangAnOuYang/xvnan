@@ -172,7 +172,7 @@ public class JPBCUtil {
 
     private static Pairing getPairing() {
         if (pairing == null) {
-            pairing = PairingFactory.getPairing("src/main/resources/static/a1.properties");
+            pairing = PairingFactory.getPairing("static/a1.properties");
         }
         return pairing;
     }

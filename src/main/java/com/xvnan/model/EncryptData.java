@@ -1,6 +1,12 @@
 package com.xvnan.model;
 
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.activerecord.Model;
+import com.baomidou.mybatisplus.annotations.TableField;
+import com.baomidou.mybatisplus.annotations.TableName;
+
 import java.io.Serializable;
 import java.util.Arrays;
 
@@ -9,18 +15,36 @@ import java.util.Arrays;
  * @date 2020/1/6
  */
 public class EncryptData implements Serializable {
-    private static final long serialVersionUID = 1L;
 
     private Index[] index;
     private FeedbackData feedbackData;
     private String indexString;
-    private String feedbackDataString;
+    private String dataString;
 
-    public EncryptData(String indexString,String feedbackDataString){
+
+    private String indexArray;
+    private String cipherMessage;
+    private String time;
+
+    public EncryptData(String indexString,String dataString){
         this.indexString=indexString;
-        this.feedbackDataString=feedbackDataString;
+        this.dataString=dataString;
     }
-    
+
+    public EncryptData(String indexArray,String cipherMessage,String time){
+        JSONArray jsonArray=JSONArray.parseArray(indexArray);
+        Index[] indices=new Index[jsonArray.size()];
+        for (int i=0;i<jsonArray.size();i++){
+            JSONObject jsonObject=jsonArray.getJSONObject(i);
+            indices[i]=JSONObject.toJavaObject(jsonObject,Index.class);
+        }
+        FeedbackData feedbackData=new FeedbackData();
+        feedbackData.cipherMessage=cipherMessage;
+        feedbackData.time=new Long(time);
+        this.index=indices;
+        this.feedbackData=feedbackData;
+    }
+
     public EncryptData(Index[] index,FeedbackData feedbackData){
         this.index=index;
         this.feedbackData=feedbackData;
@@ -29,7 +53,32 @@ public class EncryptData implements Serializable {
     public EncryptData(){
 
     }
-    
+
+
+    public String getIndexArray() {
+        return indexArray;
+    }
+
+    public void setIndexArray(String indexArray) {
+        this.indexArray = indexArray;
+    }
+
+    public String getCipherMessage() {
+        return cipherMessage;
+    }
+
+    public void setCipherMessage(String cipherMessage) {
+        this.cipherMessage = cipherMessage;
+    }
+
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
+    }
+
     public String getIndexString() {
         return indexString;
     }
@@ -38,12 +87,12 @@ public class EncryptData implements Serializable {
         this.indexString = indexString;
     }
 
-    public String getFeedbackDataString() {
-        return feedbackDataString;
+    public String getDataString() {
+        return dataString;
     }
 
-    public void setFeedbackDataString(String feedbackDataString) {
-        this.feedbackDataString = feedbackDataString;
+    public void setDataString(String dataString) {
+        this.dataString = dataString;
     }
 
     public Index[] getIndex() {

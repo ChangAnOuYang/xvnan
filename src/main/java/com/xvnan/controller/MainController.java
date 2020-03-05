@@ -10,7 +10,6 @@ import com.xvnan.jpbc.api.PairingParameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import java.io.*;
@@ -27,6 +26,7 @@ public class MainController {
 
     @Autowired
     private EncryptDataService encryptDataService;
+
 
     @Autowired
     private KeywordService keywordService;
@@ -48,7 +48,7 @@ public class MainController {
             result.put("PairingParameters",pairingParameters);
             return result.toJSONString();
         }catch (Exception ex){
-            logger.error("序列化错误");
+            logger.error("序列化错误",ex);
         }
         return "服务器异常";
     }
@@ -56,19 +56,28 @@ public class MainController {
     @PostMapping("/uploadData")
     @ResponseBody
     public String uploadData(@RequestBody EncryptData encryptData){
+        encryptData=new EncryptData(encryptData.getIndexArray(),encryptData.getCipherMessage(),encryptData.getTime());
+        //System.out.println(encryptData.toString());
+        JSONObject jsonObject=new JSONObject();
         try{
             encryptData=encryptDataService.toMysql(encryptData);
-            encryptDataService.insert(encryptData);
-            return "success";
+            encryptDataService.insertEncryptData(encryptData);
+            jsonObject.put("code",0);
+            jsonObject.put("msg","success");
+            return jsonObject.toJSONString();
         }catch (Exception ex){
-            logger.error("获取数据异常");
-            return "fail";
+            logger.error("数据异常",ex);
+            jsonObject.put("code",-1);
+            jsonObject.put("msg","error");
+            jsonObject.put("data",ex);
+            return jsonObject.toJSONString();
         }
     }
 
     @GetMapping("/getKeywords")
     @ResponseBody
     public String getKeywords(){
+        JSONObject jsonObject=new JSONObject();
         try{
             List<Keyword> list=keywordService.getKeywords();
             JSONArray jsonArray=new JSONArray();
@@ -76,10 +85,17 @@ public class MainController {
                 keyword.setKeyIndex(Keyword.stringToArray(keyword.getKeyIndexString()));
                 jsonArray.add(keyword);
             }
-            return jsonArray.toJSONString();
+            jsonObject.put("code",0);
+            jsonObject.put("msg","success");
+            jsonObject.put("data",jsonArray);
+            return jsonObject.toJSONString();
         }catch (Exception ex){
             logger.error("获取关键字失败",ex);
-            return "error";
+
+            jsonObject.put("code",-1);
+            jsonObject.put("msg","error");
+            jsonObject.put("data",ex);
+            return jsonObject.toJSONString();
         }
     }
 
@@ -125,9 +141,13 @@ public class MainController {
 
     @PostMapping("searchData")
     @ResponseBody
-    public String searchData(@RequestBody String[] strs){
+    public String searchData(@RequestBody EncryptData encryptData){
         try{
+            String[] strs=new String[2];
+            strs[0]=encryptData.getIndexString();
+            strs[1]=encryptData.getIndexArray();
             List<EncryptData> list=encryptDataService.getEncryptDatas();
+
             EncryptData[] list2=new EncryptData[list.size()];
             for (int i=0;i<list.size();i++){
                 list2[i]=encryptDataService.fromMysql(list.get(i));
@@ -137,10 +157,18 @@ public class MainController {
             for (FeedbackData feedbackData:result){
                 jsonArray.add(feedbackData);
             }
-            return jsonArray.toJSONString();
+            JSONObject jsonObject=new JSONObject();
+            jsonObject.put("code",0);
+            jsonObject.put("msg","success");
+            jsonObject.put("data",jsonArray);
+            return jsonObject.toJSONString();
         }catch (Exception ex){
             logger.error("查询异常",ex);
-            return "查询失败";
+            JSONObject jsonObject=new JSONObject();
+            jsonObject.put("code",-1);
+            jsonObject.put("msg","error");
+            jsonObject.put("data",ex);
+            return jsonObject.toJSONString();
         }
 
     }

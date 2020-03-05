@@ -11,9 +11,11 @@ import java.util.List;
 
 public interface EncryptDataService extends IService<EncryptData> {
 
-    public EncryptData toMysql(EncryptData data);
+    EncryptData toMysql(EncryptData data);
 
-    public EncryptData fromMysql(EncryptData data);
+    EncryptData fromMysql(EncryptData data);
 
-    public List getEncryptDatas();
+    List getEncryptDatas();
+
+    Integer insertEncryptData(EncryptData encryptData);
 }

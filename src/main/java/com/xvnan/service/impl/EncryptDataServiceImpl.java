@@ -15,10 +15,10 @@ import java.util.List;
 @Service
 public class EncryptDataServiceImpl extends ServiceImpl<EncryptDataMapper, EncryptData> implements EncryptDataService {
     //@Value("${normal_split_string}")
-    private String normalString="&*#";
+    private String normalString="##";
 
     //@Value("${index_split_string}")
-    private String indexString="&#%";
+    private String indexSplitString="%%";
 
     @Autowired
     private EncryptDataMapper encryptDataMapper;
@@ -31,17 +31,18 @@ public class EncryptDataServiceImpl extends ServiceImpl<EncryptDataMapper, Encry
         Index[] indexs=data.getIndex();
         feedbackDataString=feedbackData.cipherMessage+normalString+feedbackData.time;
         for (Index in:indexs){
-            indexString=in.C0+indexString+in.C1+indexString+in.C2+indexString+in.Mv+normalString;
+            indexString=indexString+in.C0+indexSplitString+in.C1+indexSplitString+in.C2+indexSplitString+in.Mv+normalString;
         }
-        data.setFeedbackDataString(feedbackDataString);
+        data.setDataString(feedbackDataString);
         data.setIndexString(indexString);
         return data;
     }
 
     @Override
     public EncryptData fromMysql(EncryptData data){
+        //System.out.println(data.toString());
         FeedbackData feedbackData=new FeedbackData();
-        String[] feedbackStrings=data.getIndexString().split(normalString);
+        String[] feedbackStrings=data.getDataString().split(normalString);
         feedbackData.cipherMessage=feedbackStrings[0];
         feedbackData.time=new Long(feedbackStrings[1]);
         data.setFeedbackData(feedbackData);
@@ -49,7 +50,7 @@ public class EncryptDataServiceImpl extends ServiceImpl<EncryptDataMapper, Encry
         Index[] indexs=new Index[indexStrings.length];
         for (int i=0;i<indexs.length;i++){
             Index index=new Index();
-            String[] cx=indexStrings[i].split(indexString);
+            String[] cx=indexStrings[i].split(indexSplitString);
             index.C0=cx[0];
             index.C1=cx[1];
             index.C2=cx[2];
@@ -64,4 +65,11 @@ public class EncryptDataServiceImpl extends ServiceImpl<EncryptDataMapper, Encry
     public List getEncryptDatas() {
         return encryptDataMapper.getEncryptDatas();
     }
+
+    @Override
+    public Integer insertEncryptData(EncryptData encryptData) {
+        return encryptDataMapper.insertEncryptData(encryptData.getIndexString(),encryptData.getDataString());
+    }
+
+
 }
